@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { MONGOURI } = require("./keys");
 
 const auth = require("./routes/auth");
-require("./keys")
+
 const app = express();
 const hostName = "localhost"
 const port ="4000";
@@ -12,7 +12,7 @@ app.use(express.json())
 // ====================MONGODB CONNECTION================
 
 mongoose.Promise = global.Promise;
-mongoose.connect(MONGOURI, ({useUnifiedTopology:true, useNewUrlParser:true}), ()=>{
+mongoose.connect(process.env.MONGOURI, ({useUnifiedTopology:true, useNewUrlParser:true}), ()=>{
     console.log("connect to MongoDB");
 });
 

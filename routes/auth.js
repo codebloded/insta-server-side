@@ -2,7 +2,7 @@ const express = require('express');
 const { findOne } = require('../models/User');
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
-
+require('dotenv').config()
 
 const router = express.Router();
 
