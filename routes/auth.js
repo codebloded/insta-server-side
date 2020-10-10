@@ -3,13 +3,16 @@ const { findOne } = require('../models/User');
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 require('dotenv').config()
+const JWT = require('jsonwebtoken');
+const authLogin = require('../middleware/authLogin');
 
 const router = express.Router();
 
-router.get('/', (req,res)=>{
-    res.json({"message":"Hello world welcome to instagram"});
+router.get('/protected',authLogin, (req,res)=>{
+    res.send("Hello world welcome to instagram");
 })
 
+// ================SIGNIN ROUTE==========================
 router.post("/signup", async (req, res)=>{
     req.header("Content-Type", "application/json");
     const{name, email,password} = req.body;
@@ -41,6 +44,39 @@ router.post("/signup", async (req, res)=>{
     }
 
 });
+
+
+// ================LOGIN ROUTE======================
+router.post("/login", async (req,res)=>{
+    req.header("Content-Type","application/json");
+    const {email, password} = req.body;
+    if(!email || !password){
+        return res.json({message:"please provide email or password"});
+    }
+    try {
+        const savedUser = await User.findOne({email:email});
+        if(!savedUser){
+           return res.status(422).json({err:"Inavlid email or password"})
+        }
+  
+
+            const matchedPassword = await bcrypt.compare(password, savedUser.password);
+            if(matchedPassword){
+                //  res.json({message:"sucessfuly LoggedIn"});
+                //Token
+                const token = JWT.sign({_id:savedUser._id}, process.env.JWT_SECRET);
+                res.json({token});
+            }
+            else{
+                res.json({error:"Email or Passowrd is wrong"});
+            }
+       
+    } catch (error) {
+        res.json({message:error});
+    }
+ 
+
+})
 
   
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { MONGOURI } = require("./keys");
+
 
 const auth = require("./routes/auth");
 
