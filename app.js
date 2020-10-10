@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 
 
 const auth = require("./routes/auth");
+const Post = require('./models/Post');
+const post = require('./routes/post')
 
 const app = express();
 const hostName = "localhost"
@@ -17,6 +19,7 @@ mongoose.connect(process.env.MONGOURI, ({useUnifiedTopology:true, useNewUrlParse
 });
 
 app.use(auth);
+app.use(post);
 
 
 
