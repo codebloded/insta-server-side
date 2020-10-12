@@ -28,14 +28,15 @@ router.get('/mypost', authLogin, async (req, res) => {
 
 router.post("/createpost", authLogin, async (req, res) => {
     req.header('Content-Type', 'application/json');
-    const { title, body } = req.body;
-    if (!title || !body) {
-        return res.status(422).json({ message: "Please add all feilds" });
+    const { title, body, photo } = req.body;
+    if (!title || !body || !photo) {
+        return res.status(422).json({ error: "Please add all feilds" });
     }
     req.user.password = undefined;
     const post = new Post({
         title,
         body,
+        photo:photo,
         postedBy: req.user
     })
     try {
