@@ -90,7 +90,40 @@ router.put('/comment',authLogin,(req,res)=>{
                 res.json(result); 
             }
         })
+    });
+
+router.delete("/deletepost/:postId",authLogin,(req,res)=>{
+    Post.findOne({_id:req.params.postId}).populate('postedBy',"_id")
+    .exec((err,post)=>{
+        if(err || !post){
+            return res.status(404).json({error:err});
+        }
+        if(post.postedBy._id.toString() === req.user._id.toString()){
+            post.remove().then(result=>{
+                res.json(result)
+            }).catch(err=>{
+                res,json({error:err});
+            })
+        }
     })
+});
+
+router.delete("/deletecomment/:_id",authLogin, (req,res)=>{
+    Post.findOne({_id:req.params._id}).populate("postedBy","_id name")
+    .exec((err,comment)=>{
+        if(err || !comment){
+            return res.status(404).json({error:err});
+        }
+        if(comment.postedBy._id.toString() === req.user._id.toString()){
+            comment.remove().then(result=>{
+                res.json(result);
+            })
+        }
+    }).catch(err=>{
+        res.json({error:err});
+    })
+
+})
 
 
 
