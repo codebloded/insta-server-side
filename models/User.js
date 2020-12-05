@@ -1,5 +1,6 @@
   
 const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Schema.Types;
 
 
 
@@ -17,7 +18,9 @@ const userSchema = mongoose.Schema({
         type:String,
         min:8,
         required:true
-    }
+    },
+    followers:[{type:ObjectId, ref:"User"}],
+    following:[{type:ObjectId, ref:"User"}]
 
     
 })
