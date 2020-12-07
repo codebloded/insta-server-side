@@ -5,12 +5,24 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config()
 const JWT = require('jsonwebtoken');
 const authLogin = require('../middleware/authLogin');
-
+const nodemailer = require('nodemailer');
 const router = express.Router();
+const mailGun = require('nodemailer-mailgun-transport');
+
+const auth = {
+    auth:{
+        api_key:'bce7b3a79842dbf1b2becae5f11a637a-4879ff27-4a817ef7',
+        domain:'sandbox60a2bb74e9e245949c8191120f8343e5.mailgun.org',
+    }
+}
+const transporter = nodemailer.createTransport(mailGun(auth));
+
+
 
 router.get('/protected', authLogin, (req, res) => {
     res.send("Hello world welcome to instagram");
 })
+
 
 // ================SIGNIN ROUTE==========================
 router.post("/signup", async (req, res) => {
@@ -34,6 +46,13 @@ router.post("/signup", async (req, res) => {
         })
         user.save()
             .then(user => {
+
+                transporter.sendMail({
+                    to:user.email,
+                    from:'Mailgun Sandbox <postmaster@sandbox60a2bb74e9e245949c8191120f8343e5.mailgun.org>',
+                    subject:'signup sucessfuly',
+                    html:"<h1>Welcome to Instagram </h1>"
+                })
                 res.json({ message: "saved sucessfuly!" })
             }).catch(err => {
                 res.json({ message: err })

@@ -61,6 +61,16 @@ router.put('/unfollow', authLogin,(req,res)=>{
 })
 });
 
+router.put('/updatepic',authLogin,(req,res)=>{
+    User.findByIdAndUpdate(req.user._id,{$set:{pic:req.body.pic}},{new:true},(err,data)=>{
+        if(err){
+            return res.status(422).json({err:"Pic cannot be updated"});
+        }
+     res.status(200).json(data);
+       
+    })
+})
+
 
 
 
