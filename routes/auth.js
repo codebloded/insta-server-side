@@ -1,5 +1,6 @@
 const express = require('express');
 const { findOne } = require('../models/User');
+const crypto = require('crypto');
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 require('dotenv').config()
@@ -11,8 +12,8 @@ const mailGun = require('nodemailer-mailgun-transport');
 
 const auth = {
     auth:{
-        api_key:'bce7b3a79842dbf1b2becae5f11a637a-4879ff27-4a817ef7',
-        domain:'sandbox60a2bb74e9e245949c8191120f8343e5.mailgun.org',
+        api_key:process.env.api_key,
+        domain:process.env.DOMAIN,
     }
 }
 const transporter = nodemailer.createTransport(mailGun(auth));
@@ -49,7 +50,7 @@ router.post("/signup", async (req, res) => {
 
                 transporter.sendMail({
                     to:user.email,
-                    from:'Mailgun Sandbox <postmaster@sandbox60a2bb74e9e245949c8191120f8343e5.mailgun.org>',
+                    from:process.env.EMAIL,
                     subject:'signup sucessfuly',
                     html:"<h1>Welcome to Instagram </h1>"
                 })
@@ -95,6 +96,35 @@ router.post("/login", async (req, res) => {
     } catch (err) {
         res.json({ err: error });
     }
+});
+
+router.post('/reset-password',(req,res)=>{
+    crypto.randomBytes(32,(err,buffer)=>{
+        if(err){
+            console.log(err);
+        }
+        const token = buffer.toString('hex');
+        User.findOne({email:req.body.email}).then(user=>{
+            if(!user){
+                return res.status(404).json({error:"User doesn't exists with this email"});
+            }
+            user.restToken = token;
+            user.expireToken= Date.now() +3600000;
+            user.save()
+            .then(result=>{
+                transporter.sendMail({
+                    to:user.email,
+                    from:process.env.EMAIL,
+                    subject:'Rest Password',
+                    html:`
+                        <p>You requested for reset password</p>
+                        <h4>click on this <a href:'http://localhost:3000/reset-password/${token}'>link to reset the password</h4> `
+                })
+                res.json({message:"Check Your email"}); 
+            })
+        })
+    })
+
 })
 
 
