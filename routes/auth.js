@@ -15,7 +15,7 @@ router.get('/protected', authLogin, (req, res) => {
 // ================SIGNIN ROUTE==========================
 router.post("/signup", async (req, res) => {
     req.header("Content-Type", "application/json");
-    const { name, email, password } = req.body;
+    const { name, email, password,pic } = req.body;
     if (!name || !email || !password) {
         return res.status(404).json({ error: "please fill all the fields" });
     }
@@ -29,7 +29,8 @@ router.post("/signup", async (req, res) => {
         const user = new User({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            pic
         })
         user.save()
             .then(user => {
@@ -65,8 +66,8 @@ router.post("/login", async (req, res) => {
            
             //Token
             const token = JWT.sign({ _id: savedUser._id }, process.env.JWT_SECRET);
-            const {_id, name, email} = savedUser;
-            res.json({ token ,user:{_id,name,email}});
+            const {_id, name, email, followers, following, pic} = savedUser;
+            res.json({ token ,user:{_id,name,email, followers, following,pic}});
         }
         else {
             res.json({ error: "Email or Passowrd is wrong" });

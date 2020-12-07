@@ -8,9 +8,20 @@ const { json } = require('body-parser');
 const User = require('../models/User');
 
 
-router.get('/allpost', async (req, res) => {
+router.get('/allpost',authLogin, async (req, res) => {
     try {
         const posts = await Post.find()
+        .populate("postedBy", "_id name")
+        .populate("comments.postedBy", "_id name")
+        res.json({ posts: posts });
+    } catch (error) {
+        res.json({ err: error });
+    }
+})
+
+router.get('/getsubpost',authLogin, async (req, res) => {
+    try {
+        const posts = await Post.find({postedBy:{$in: req.user.following}})
         .populate("postedBy", "_id name")
         .populate("comments.postedBy", "_id name")
         res.json({ posts: posts });
