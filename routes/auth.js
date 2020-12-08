@@ -12,7 +12,7 @@ const mailGun = require('nodemailer-mailgun-transport');
 
 const auth = {
     auth:{
-        api_key:process.env.api_key,
+        api_key:process.env.API_KEY,
         domain:process.env.DOMAIN,
     }
 }
@@ -119,7 +119,7 @@ router.post('/reset-password',(req,res)=>{
                     html:`
                         <p>You requested for reset password</p>
                         <h4>click on this <a href:'http://localhost:3000/reset-password/${token}'>link to reset the password</h4> `
-                })
+                });
                 res.json({message:"Check Your email"}); 
             })
         })

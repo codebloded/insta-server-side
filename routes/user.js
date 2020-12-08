@@ -69,6 +69,18 @@ router.put('/updatepic',authLogin,(req,res)=>{
      res.status(200).json(data);
        
     })
+});
+
+router.post('/search-users',(req,res)=>{
+    let exp = new RegExp("^"+req.body.query);
+    User.find({email:{$regex:exp}})
+    .select("_id email")
+    .then(user=>{
+        res.json({user});
+    }).catch(err=>{
+        console.log(err);
+    })
+
 })
 
 
